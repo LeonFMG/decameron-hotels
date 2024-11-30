@@ -2,63 +2,51 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Hotel;
 use Illuminate\Http\Request;
 
 class HotelController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra una lista de los hoteles.
      */
     public function index()
     {
-        //
+        // Obtiene todos los hoteles desde la base de datos
+        $hotels = Hotel::all();
+
+        // Retorna la vista con la lista de hoteles
+        return view('hotels.index', compact('hotels'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra el formulario para crear un nuevo hotel.
      */
     public function create()
     {
-        //
+        // Retorna la vista de creación de hotel
+        return view('hotels.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacena un nuevo hotel en la base de datos.
      */
     public function store(Request $request)
     {
-        //
-    }
+        // Valida los datos del formulario
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'nit' => 'required|string|unique:hotels,nit',
+            'max_rooms' => 'required|integer|min:1',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        // Crea un nuevo hotel con los datos validados
+        Hotel::create($request->all());
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        // Redirige a la lista de hoteles con un mensaje de éxito
+        return redirect()->route('hotels.index')
+                         ->with('success', 'Hotel creado exitosamente.');
     }
 }
